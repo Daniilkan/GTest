@@ -1,4 +1,4 @@
-package httpHelp
+package http
 
 import (
 	"encoding/json"
