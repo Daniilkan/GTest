@@ -9,7 +9,7 @@ import (
 )
 
 func ResponseCheck(response *http.Response) string {
-	if response.StatusCode == 200 {
+	if response.StatusCode == http.StatusOK {
 		return "Success"
 	}
 	return "Fail"
@@ -17,10 +17,7 @@ func ResponseCheck(response *http.Response) string {
 
 func ResponseNotEmpty(response *http.Response) bool {
 	data, _ := io.ReadAll(response.Body)
-	if data != nil || len(data) > 0 {
-		return true
-	}
-	return false
+	return len(data) > 0
 }
 
 type ResponseType = responseResult
@@ -34,30 +31,39 @@ const (
 
 func GetResponseType(response *http.Response) responseResult {
 	data, _ := io.ReadAll(response.Body)
-	var dataBody struct{}
-	err := json.Unmarshal(data, &dataBody)
-	if err == nil {
+	if isJSON(data) {
 		return TypeJson
 	}
-	d := xml.NewDecoder(response.Body)
+	if isHTML(response.Body) {
+		return TypeHtml
+	}
+	return TypeError
+}
 
-	// Configure the decoder for HTML; leave off strict and autoclose for XHTML
+func isJSON(data []byte) bool {
+	var js struct{}
+	return json.Unmarshal(data, &js) == nil
+}
+
+func isHTML(body io.Reader) bool {
+	d := xml.NewDecoder(body)
 	d.Strict = false
 	d.AutoClose = xml.HTMLAutoClose
 	d.Entity = xml.HTMLEntity
 	for {
 		_, err := d.Token()
-		switch err {
-		case io.EOF:
-			return TypeHtml // We're done, it's valid!
+		if err == io.EOF {
+			return true
+		}
+		if err != nil {
+			return false
 		}
 	}
-	return TypeError
 }
 
 func ResponseContains(response *http.Response, subSlice string) bool {
 	data, _ := io.ReadAll(response.Body)
-	return strings.Contains(string(data), string(subSlice))
+	return strings.Contains(string(data), subSlice)
 }
 
 func WebPageWorking(address string) bool {
@@ -65,10 +71,8 @@ func WebPageWorking(address string) bool {
 	if err != nil {
 		return false
 	}
-	if response.StatusCode == 200 {
-		return true
-	}
-	return false
+	defer response.Body.Close()
+	return response.StatusCode == http.StatusOK
 }
 
 func WebPageContains(address string, subSlice string) bool {
@@ -76,6 +80,7 @@ func WebPageContains(address string, subSlice string) bool {
 	if err != nil {
 		return false
 	}
+	defer response.Body.Close()
 	data, _ := io.ReadAll(response.Body)
-	return strings.Contains(string(data), string(subSlice))
+	return strings.Contains(string(data), subSlice)
 }
