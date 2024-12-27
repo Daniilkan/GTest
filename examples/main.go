@@ -63,7 +63,3 @@ func httpExample() {
 	fmt.Println(gth.WebPageWorking(url))        // Returns true/false if webpage is working
 	fmt.Println(gth.WebPageContains(url, "Go")) // Return true/false if webpage contains string
 }
-
-func main() {
-	unitExample()
-}
