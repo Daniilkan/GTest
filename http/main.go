@@ -37,7 +37,7 @@ func GetResponseType(response *http.Response) ResponseType {
 	var dataBody struct{}
 	err := json.Unmarshal(data, &dataBody)
 	if err == nil {
-		return typeJson
+		return TypeJson
 	}
 	d := xml.NewDecoder(response.Body)
 
@@ -49,10 +49,10 @@ func GetResponseType(response *http.Response) ResponseType {
 		_, err := d.Token()
 		switch err {
 		case io.EOF:
-			return typeHtml // We're done, it's valid!
+			return TypeHtml // We're done, it's valid!
 		}
 	}
-	return typeError
+	return TypeError
 }
 
 func ResponseContains(response *http.Response, subSlice string) bool {
