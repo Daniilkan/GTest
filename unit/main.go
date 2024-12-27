@@ -3,7 +3,6 @@ package unit
 import (
 	"bytes"
 	"reflect"
-	"testing"
 )
 
 type CompareType = compareResult
@@ -67,12 +66,11 @@ func Compare(a interface{}, b interface{}, kind reflect.Kind) compareResult {
 	return CompareEqual
 }
 
-func Nil(t *testing.T, param interface{}) (interface{}, bool) {
+func Nil(param interface{}) bool {
 	if param != nil {
-		t.Logf("Expected nil, got not nil")
-		return "Expected nil, got not nil", false
+		return false
 	}
-	return nil, true
+	return true
 }
 
 func IsEmpty(object interface{}) bool {
@@ -83,5 +81,5 @@ func IsEmpty(object interface{}) bool {
 	if objValue.Kind() == reflect.Chan || objValue.Kind() == reflect.Map || objValue.Kind() == reflect.Slice {
 		return objValue.Len() == 0
 	}
-	return true
+	return false
 }

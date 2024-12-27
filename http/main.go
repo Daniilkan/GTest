@@ -32,7 +32,7 @@ const (
 	TypeJson
 )
 
-func GetResponseType(response *http.Response) ResponseType {
+func GetResponseType(response *http.Response) responseResult {
 	data, _ := io.ReadAll(response.Body)
 	var dataBody struct{}
 	err := json.Unmarshal(data, &dataBody)
