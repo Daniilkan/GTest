@@ -27,9 +27,9 @@ type ResponseType = responseResult
 type responseResult int
 
 const (
-	typeError responseResult = iota - 1
-	typeHtml
-	typeJson
+	TypeError responseResult = iota - 1
+	TypeHtml
+	TypeJson
 )
 
 func GetResponseType(response *http.Response) ResponseType {
