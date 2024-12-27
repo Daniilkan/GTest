@@ -11,7 +11,7 @@
 Installation
 ============
 
-To install Testify, use `go get`:
+To install GTest, use `go get`:
 
     go get github.com/Daniilkan/GTest
 
