@@ -2,7 +2,6 @@ package unit
 
 import (
 	"bytes"
-	"errors"
 	"reflect"
 	"testing"
 )
@@ -11,45 +10,45 @@ type CompareType = compareResult
 type compareResult int
 
 const (
-	compareLess compareResult = iota - 1
-	compareEqual
-	compareGreater
-	compareError
+	CompareLess compareResult = iota - 1
+	CompareEqual
+	CompareGreater
+	CompareError
 )
 
-func Compare(a interface{}, b interface{}, kind reflect.Kind) (compareResult, error) {
+func Compare(a interface{}, b interface{}, kind reflect.Kind) compareResult {
 	switch kind {
 	case reflect.Int:
 		intObjA, ok := a.(int)
 		if !ok {
-			return compareError, errors.New("Not needed type of A arg")
+			return CompareError
 		}
 		intObjB, ok := b.(int)
 		if !ok {
-			return compareError, errors.New("Not needed type of B arg")
+			return CompareError
 		}
 		if intObjA > intObjB {
-			return compareGreater, nil
+			return CompareGreater
 		} else if intObjA < intObjB {
-			return compareLess, nil
+			return CompareLess
 		} else {
-			return compareEqual, nil
+			return CompareEqual
 		}
 	case reflect.Float32, reflect.Float64:
 		floatObjA, ok := a.(float64)
 		if !ok {
-			return compareError, errors.New("Not needed type of A arg")
+			return CompareError
 		}
 		floatObjB, ok := b.(float64)
 		if !ok {
-			return compareError, errors.New("Not needed type of B arg")
+			return CompareError
 		}
 		if floatObjA > floatObjB {
-			return compareGreater, nil
+			return CompareGreater
 		} else if floatObjA < floatObjB {
-			return compareLess, nil
+			return CompareLess
 		} else {
-			return compareEqual, nil
+			return CompareEqual
 		}
 	case reflect.Slice:
 		if !(reflect.ValueOf(a).CanConvert(reflect.TypeOf([]byte{}))) {
@@ -57,15 +56,15 @@ func Compare(a interface{}, b interface{}, kind reflect.Kind) (compareResult, er
 		}
 		bytesObjA, ok := a.([]byte)
 		if !ok {
-			return compareError, errors.New("Not needed type of A arg")
+			return CompareError
 		}
 		bytesObjB, ok := b.([]byte)
 		if !ok {
-			return compareError, errors.New("Not needed type of B arg")
+			return CompareError
 		}
-		return compareResult(bytes.Compare(bytesObjA, bytesObjB)), nil
+		return compareResult(bytes.Compare(bytesObjA, bytesObjB))
 	}
-	return compareEqual, nil
+	return CompareEqual
 }
 
 func Nil(t *testing.T, param interface{}) (interface{}, bool) {
