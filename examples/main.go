@@ -61,5 +61,6 @@ func httpExample() {
 	// Returns HTML as go.dev is a webpage
 
 	fmt.Println(gth.WebPageWorking(url))        // Returns true/false if webpage is working
+	
 	fmt.Println(gth.WebPageContains(url, "Go")) // Return true/false if webpage contains string
 }
