@@ -15,6 +15,7 @@ const (
 	CompareError
 )
 
+// Compare compares two objects of the same type
 func Compare(a interface{}, b interface{}, kind reflect.Kind) compareResult {
 	switch kind {
 	case reflect.Int:
@@ -81,10 +82,12 @@ func compareSlices(a, b interface{}) compareResult {
 	return compareResult(bytes.Compare(bytesObjA, bytesObjB))
 }
 
+// Nil return true if object is nil
 func Nil(param interface{}) bool {
 	return param == nil
 }
 
+// IsEmpty returns true if object is nil or empty
 func IsEmpty(object interface{}) bool {
 	if object == nil {
 		return true
@@ -98,6 +101,7 @@ func IsEmpty(object interface{}) bool {
 	}
 }
 
+// CheckFunctionResult checks if function returns expected result
 func CheckFunctionResult(fn interface{}, params []interface{}, expectedResult interface{}) bool {
 	fnValue := reflect.ValueOf(fn)
 	if fnValue.Kind() != reflect.Func {

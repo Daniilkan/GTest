@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// ResponseCheck checks if response status code is 200
 func ResponseCheck(response *http.Response) string {
 	if response.StatusCode == http.StatusOK {
 		return "Success"
@@ -15,11 +16,14 @@ func ResponseCheck(response *http.Response) string {
 	return "Fail"
 }
 
+// ResponseNotEmpty checks if response body is not empty
 func ResponseNotEmpty(response *http.Response) bool {
 	data, _ := io.ReadAll(response.Body)
+	response.Body = io.NopCloser(strings.NewReader(string(data))) // Reset Body
 	return len(data) > 0
 }
 
+// GetResponseType returns type of response
 type ResponseType = responseResult
 type responseResult int
 
@@ -31,10 +35,11 @@ const (
 
 func GetResponseType(response *http.Response) responseResult {
 	data, _ := io.ReadAll(response.Body)
+	response.Body = io.NopCloser(strings.NewReader(string(data))) // Reset Body
 	if isJSON(data) {
 		return TypeJson
 	}
-	if isHTML(response.Body) {
+	if isHTML(io.NopCloser(strings.NewReader(string(data)))) {
 		return TypeHtml
 	}
 	return TypeError
@@ -61,11 +66,14 @@ func isHTML(body io.Reader) bool {
 	}
 }
 
+// ResponseContains checks if response contains subSlice
 func ResponseContains(response *http.Response, subSlice string) bool {
 	data, _ := io.ReadAll(response.Body)
+	response.Body = io.NopCloser(strings.NewReader(string(data))) // Reset Body
 	return strings.Contains(string(data), subSlice)
 }
 
+// WebPageWorking checks if webpage is working
 func WebPageWorking(address string) bool {
 	response, err := http.Get(address)
 	if err != nil {
@@ -75,6 +83,7 @@ func WebPageWorking(address string) bool {
 	return response.StatusCode == http.StatusOK
 }
 
+// WebPageContains checks if webpage contains subSlice
 func WebPageContains(address string, subSlice string) bool {
 	response, err := http.Get(address)
 	if err != nil {
