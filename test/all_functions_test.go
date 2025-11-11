@@ -135,11 +135,15 @@ func TestHTTPFunctions(t *testing.T) {
 </body>
 </html>`)),
 			Header: http.Header{"Content-Type": []string{"text/html"}},
-		}, "body", true},
+		}, "body", true, nil},
 	}
 	for _, v := range values {
-		if result := gth.ResponseContains(v[0].(*http.Response), v[1].(string)); result != v[2] {
+		result, err := gth.ResponseContains(v[0].(*http.Response), v[1].([]byte))
+		if result != v[2] {
 			t.Errorf("Expected %v, got %v", v[2], result)
+		}
+		if err != nil {
+			t.Errorf("Expected %v, got %v", v[3], err)
 		}
 	}
 
@@ -156,12 +160,16 @@ func TestHTTPFunctions(t *testing.T) {
 
 	// Test WebPageContains function
 	values = [][]interface{}{
-		{"https://wikipedia.org", "English", true},
-		{"https://wikipedia.org", "Russian", false},
+		{"https://wikipedia.org", "English", true, nil},
+		{"https://wikipedia.org", "Russian", false, nil},
 	}
 	for _, v := range values {
-		if result := gth.WebPageContains(v[0].(string), v[1].(string)); result != v[2] {
+		result, err := gth.WebPageContains(v[0].(string), v[1].([]byte))
+		if result != v[2] {
 			t.Errorf("Expected %v, got %v", v[2], result)
+		}
+		if err != v[3] {
+			t.Errorf("Expected %v, got %v", v[3], err)
 		}
 	}
 }

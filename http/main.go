@@ -1,6 +1,7 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"io"
@@ -67,10 +68,27 @@ func isHTML(body io.Reader) bool {
 }
 
 // ResponseContains checks if response contains subSlice
-func ResponseContains(response *http.Response, subSlice string) bool {
-	data, _ := io.ReadAll(response.Body)
-	response.Body = io.NopCloser(strings.NewReader(string(data))) // Reset Body
-	return strings.Contains(string(data), subSlice)
+func ResponseContains(response *http.Response, seq []byte) (bool, error) {
+	buff := make([]byte, len(seq))
+
+	n, err := response.Body.Read(buff)
+	if err != nil && err != io.EOF {
+		return false, err
+	}
+	if n != len(seq) {
+		return false, nil
+	}
+
+	for {
+		if bytes.Equal(seq, buff) {
+			return true, nil
+		}
+		buff = append(buff[1:], 0)
+		_, err := response.Body.Read(buff[len(buff)-1:])
+		if err != nil {
+			return false, nil
+		}
+	}
 }
 
 // WebPageWorking checks if webpage is working
@@ -84,12 +102,30 @@ func WebPageWorking(address string) bool {
 }
 
 // WebPageContains checks if webpage contains subSlice
-func WebPageContains(address string, subSlice string) bool {
+func WebPageContains(address string, seq []byte) (bool, error) {
 	response, err := http.Get(address)
 	if err != nil {
-		return false
+		return false, err
 	}
 	defer response.Body.Close()
-	data, _ := io.ReadAll(response.Body)
-	return strings.Contains(string(data), subSlice)
+	buff := make([]byte, len(seq))
+
+	n, err := response.Body.Read(buff)
+	if err != nil && err != io.EOF {
+		return false, err
+	}
+	if n != len(seq) {
+		return false, nil
+	}
+
+	for {
+		if bytes.Equal(seq, buff) {
+			return true, nil
+		}
+		buff = append(buff[1:], 0)
+		_, err := response.Body.Read(buff[len(buff)-1:])
+		if err != nil {
+			return false, nil
+		}
+	}
 }
