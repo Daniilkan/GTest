@@ -42,7 +42,7 @@ func httpExample() {
 
 	fmt.Println(gth.ResponseCheck(response)) // prints "Success"
 
-	fmt.Println(gth.ResponseContains(response, "Go")) // Returns true/false if response contains string
+	fmt.Println(gth.ResponseContains(response, []byte("Go"))) // Returns true/false if response contains string
 
 	fmt.Println(gth.ResponseNotEmpty(response)) // Returns true if response not empty, false if it is
 
@@ -62,5 +62,5 @@ func httpExample() {
 
 	fmt.Println(gth.WebPageWorking(url)) // Returns true/false if webpage is working
 
-	fmt.Println(gth.WebPageContains(url, "Go")) // Return true/false if webpage contains string
+	fmt.Println(gth.WebPageContains(url, []byte("Go"))) // Return true/false if webpage contains string
 }
